@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple WebSocket Chat</title>
+    <style>
+        body { margin: 0; padding-bottom: 3rem; font-family: sans-serif; }
+        #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+        #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+        #input:focus { outline: none; }
+        #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages > li { padding: 0.5rem 1rem; }
+        #messages > li:nth-child(odd) { background: #efefef; }
+        /* Styling for the typing indicator */
+        #typingIndicator { padding: 0.5rem 1rem; font-style: italic; color: gray; }
+    </style>
+</head>
+<body>
+    <ul id="messages"></ul>
+    <!-- Typing indicator -->
+    <div id="typingIndicator"></div>
+    <form id="form" action="">
+        <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+
+    <!-- Include the Socket.IO client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Connect to the Socket.IO server
+        const socket = io();
+        let username = '';
+
+        // Get references to HTML elements
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Prompt the user for a username and send it to the server
+        function getUsername() {
+            username = prompt("Please enter your username:");
+            if (!username || username.trim() === '') {
+                username = `User_${Math.random().toString(36).substring(2, 7)}`;
+                alert(`No username entered. Assigned: ${username}`);
+            }
+            socket.emit('set username', username);
+        }
+
+        // Handle typing notifications
+        let typingTimer;
+        const TYPING_TIMEOUT = 2000; // 2 seconds
+
+        input.addEventListener('input', () => {
+            // Emit the "typing" event when the user types
+            socket.emit('typing');
+            clearTimeout(typingTimer);
+            // Set up a timer to emit "stop typing" after inactivity
+            typingTimer = setTimeout(() => {
+                socket.emit('stop typing');
+            }, TYPING_TIMEOUT);
+        });
+
+        // Listen for form submit to send chat messages
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (input.value && username) {
+                socket.emit('chat message', input.value);
+                input.value = '';
+                socket.emit('stop typing'); // Emit stop typing when sending a message
+            }
+        });
+
+        // Listen for chat messages from the server
+        socket.on('chat message', (data) => {
+            displayMessage(data.user, data.msg);
+        });
+
+        // Listen for system messages (e.g., welcome, join, disconnect messages)
+        socket.on('system message', (msg) => {
+            displayMessage('System', msg, true);
+        });
+
+        // Listen for "user typing" event to show a typing notification
+        socket.on('user typing', (userTyping) => {
+            typingIndicator.textContent = `${userTyping} is typing...`;
+        });
+
+        // Listen for "user stopped typing" event to clear the notification
+        socket.on('user stopped typing', (userStopped) => {
+            // Simple logic: clear the indicator.
+            typingIndicator.textContent = '';
+        });
+
+        // Optionally, listen for updated user lists (bonus feature)
+        socket.on('user list', (userList) => {
+            console.log('Connected users:', userList);
+            // Here, you could update a visible list of connected users.
+        });
+
+        // Utility function to display a message in the messages list
+        function displayMessage(user, msg, isSystem = false) {
+            const item = document.createElement('li');
+            if (isSystem) {
+                item.style.fontStyle = 'italic';
+                item.style.color = 'gray';
+                item.textContent = msg;
+            } else {
+                item.textContent = `${user}: ${msg}`;
+            }
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        // On connection, prompt for a username.
+        socket.on('connect', () => {
+            console.log('✅ Connected to server:', socket.id);
+            getUsername();
+        });
+
+        // Handle disconnection events.
+        socket.on('disconnect', () => {
+            console.log('❌ Disconnected from server');
+            displayMessage('System', 'You have been disconnected.', true);
+        });
+    </script>
+</body>
+</html>
