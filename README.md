@@ -80,7 +80,7 @@ This project is a real-time chat application built using Node.js, Express, and S
     - Handles Chat Messages: Listens for "chat message" events from clients and emits these messages to all connected users.
     - Manages Typing Indicators: Listens for "typing" and "stop typing" events from clients and broadcasts the corresponding notifications.
     - Handles Disconnections: Clears user data and broadcasts a system message when a client disconnects.
-    - Asynchronous Operation: Uses an asynchronous function (fetchWelcomeMessage) to simulate a delayed welcome message which is sent only to the newly connected user.```
+    - Asynchronous Operation: Uses an asynchronous function (fetchWelcomeMessage) to simulate a delayed welcome message which is sent only to the newly connected user.
 
 
 ## Client-Side (index.html)
