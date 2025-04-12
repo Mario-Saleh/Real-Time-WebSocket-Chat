@@ -131,8 +131,13 @@ This project is a real-time chat application built using Node.js, Express, and S
 ## Testing and Debugging
 
 - **Server Logs:**
-    ```Monitor the terminal for logs regarding connections, messages, and disconnections.```
+    
+    Monitor the terminal for logs regarding connections, messages, and disconnections.
+
 - **Browser Console:**
-    ```Use your browser's developer tools (F12) to view client-side logs and debug any issues.```
+
+    Use your browser's developer tools (F12) to view client-side logs and debug any issues.
+
 - **Multiple Clients:**
-    ```Open the chat in several browser tabs or different browsers to verify that messaging, typing indicators, and system notifications are working correctly.```
+
+    Open the chat in several browser tabs or different browsers to verify that messaging, typing indicators, and system notifications are working correctly.
