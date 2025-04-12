@@ -66,50 +66,79 @@ This project is a real-time chat application built using Node.js, Express, and S
 
 ### Server-Side (server.js) 
 - **Express and HTTP Server:**
-    ```The application uses Express to serve the static index.html file. An HTTP server created with Node.js is used for integrating Socket.IO.```
+    
+    The application uses Express to serve the static index.html file. An HTTP server created with Node.js is used for integrating Socket.IO.
+
 - **Socket.IO Integration:**
-    ```The server initializes a Socket.IO instance and listens for new client connections using:
-    io.on('connection', (socket) => { ... });
+    
+    The server initializes a Socket.IO instance and listens for new client connections using:
+
+    ```io.on('connection', (socket) => { ... });```
+
     Within this connection callback, the server:
-    Sets Username: Listens for a "set username" event to record the user's name and broadcasts a join message.
-    Handles Chat Messages: Listens for "chat message" events from clients and emits these messages to all connected users.
-    Manages Typing Indicators: Listens for "typing" and "stop typing" events from clients and broadcasts the corresponding notifications.
-    Handles Disconnections: Clears user data and broadcasts a system message when a client disconnects.Asynchronous Operation: Uses an asynchronous function (fetchWelcomeMessage) to simulate a delayed welcome message which is sent only to the newly connected user.```
+    - Sets Username: Listens for a "set username" event to record the user's name and broadcasts a join message.
+    - Handles Chat Messages: Listens for "chat message" events from clients and emits these messages to all connected users.
+    - Manages Typing Indicators: Listens for "typing" and "stop typing" events from clients and broadcasts the corresponding notifications.
+    - Handles Disconnections: Clears user data and broadcasts a system message when a client disconnects.
+    - Asynchronous Operation: Uses an asynchronous function (fetchWelcomeMessage) to simulate a delayed welcome message which is sent only to the newly connected user.```
 
 
 ## Client-Side (index.html)
 - **Socket.IO Client:**
+
     The client connects to the Socket.IO server with:
-    const socket = io();
+
+    ```const socket = io();```
+    
 - **Username Prompt:**
+
     On connection, the client prompts you to enter a username (or assigns a random one if none is provided) and emits the username to the server.
+
 - **Sending and Displaying Messages:**
+
     Users type messages into an input form. Upon form submission, the message is sent to the server and then broadcasted back to all connected clients, where it is displayed in the chat area.
+
 - **Typing Indicator:**
+
     The client listens for input events on the message field to detect when a user is typing. It:
-        Emits a "typing" event immediately as the user types.
-        Uses a timer to emit a "stop typing" event after 2 seconds of inactivity.
-        Displays a "user is typing..." notification based on "user typing" events received from the server.
+    - Emits a "typing" event immediately as the user types.
+    - Uses a timer to emit a "stop typing" event after 2 seconds of inactivity.
+    - Displays a "user is typing..." notification based on "user typing" events received from the server.
+
 - **System Notifications and User List:**
+
     The client also listens for system messages (e.g., user join/leave notifications) and, optionally, for updated user lists which can be shown in the UI or the console.
 
 
 ## How to Use the Chat
 
 1. **Open in Multiple Browser Tabs:**
+
     To simulate multiple users, open http://localhost:3001 in more than one browser window or tab.
+
 2. **Set Your Username:**
+
     When prompted, enter a username.
+
     If no username is provided, a random username is assigned.
+
 3. **Send Messages:**
+
     Type your message in the input field and click "Send" or press Enter.
+
     Your message will appear in the chat area of all connected clients.
+
 4. **Observe Typing Indicator:**
+
     When one user starts typing, other connected clients will see a notification (e.g., "UserXYZ is typing...").
+
     Once the user stops typing for 2 seconds (or sends the message), the indicator will disappear.
+
 5. **View System Notifications:**
+
     System messages will notify users when someone joins or leaves the chat.
-    he asynchronous welcome message will appear once you set your username.
+
+    The asynchronous welcome message will appear once you set your username.
 
 
 ## Project Structure
